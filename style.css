@@ -1,0 +1,31 @@
+:root { --bg: #fafafa; --surface: #fff; --line: #e4e4e7; --text: #18181b; --muted: #52525b; --accent: #b3201a; --chip: #f4f4f5; color-scheme: light dark; }
+@media (prefers-color-scheme: dark) {
+  :root { --bg: #111114; --surface: #1b1b1f; --line: #2e2e33; --text: #f4f4f5; --muted: #a1a1aa; --accent: #ff7a6e; --chip: #26262b; }
+}
+* { box-sizing: border-box; }
+body { margin: 0; background: var(--bg); color: var(--text); font: 16px/1.6 -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif; }
+main { max-width: 760px; margin: 0 auto; padding: 64px 16px 48px; }
+a { color: var(--accent); }
+.eyebrow { font: 600 13px ui-monospace, SFMono-Regular, Menlo, monospace; letter-spacing: .12em; color: var(--accent); margin: 0; }
+h1 { font-size: clamp(34px, 7vw, 52px); line-height: 1.1; letter-spacing: -.02em; margin: 10px 0 14px; }
+h2 { font-size: 20px; margin: 48px 0 12px; }
+p { color: var(--muted); margin: 0 0 12px; }
+.links { display: flex; flex-wrap: wrap; gap: 8px 20px; margin-top: 18px; font-weight: 500; }
+.card { background: var(--surface); border: 1px solid var(--line); border-radius: 16px; }
+dl { margin: 0; }
+dl div { display: grid; grid-template-columns: 200px minmax(0, 1fr); gap: 4px 16px; padding: 14px 20px; }
+dl div + div { border-top: 1px solid var(--line); }
+dt { font-weight: 600; }
+dd { margin: 0; color: var(--muted); }
+@media (max-width: 600px) { dl div { grid-template-columns: minmax(0, 1fr); } }
+ul.chips { list-style: none; padding: 0; margin: 0; display: flex; flex-wrap: wrap; gap: 6px; }
+.chips li { font: 500 13px ui-monospace, SFMono-Regular, Menlo, monospace; padding: 4px 12px; border-radius: 999px; background: var(--chip); }
+footer { margin-top: 56px; font-size: 14px; color: var(--muted); }
+nav { font-size: 14px; margin-bottom: 40px; }
+.card.pad { padding: 24px; }
+.card.pad + .card.pad { margin-top: 12px; }
+.card.pad h3 { margin: 0; font-size: 18px; }
+.card.pad ul { margin: 12px 0 0; padding-left: 20px; color: var(--muted); }
+.when { font: 500 13px ui-monospace, SFMono-Regular, Menlo, monospace; color: var(--muted); }
+.head { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 4px 16px; align-items: baseline; }
+@media print { nav, .links a[href^="/"] { display: none; } body { background: #fff; } main { padding-top: 0; } }
