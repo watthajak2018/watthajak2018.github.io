@@ -1,0 +1,204 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>CareerViet test demo (replica)</title>
+<style>
+:root{--bg:#0b0b0f;--ink:#f4f4f5;--mute:#9a9aa6;--acc:#ff6a5c;--ok:#3ddc97;--line:#2a2a33;--card:#15151b}
+*{box-sizing:border-box;margin:0}
+html,body{width:1280px;height:720px;overflow:hidden;background:var(--bg);color:var(--ink);font:16px/1.4 -apple-system,"Segoe UI",Helvetica,Arial,sans-serif}
+body::before{content:"";position:absolute;inset:0;background:radial-gradient(900px 500px at 80% -10%,#3a1612 0,transparent 60%),radial-gradient(700px 400px at 0% 110%,#12263a 0,transparent 60%)}
+.scene{position:absolute;inset:0;opacity:0;transition:opacity .6s}
+.scene.on{opacity:1}
+.cap{position:absolute;left:64px;top:44px;max-width:1150px}
+.step{font:600 14px ui-monospace,Menlo,monospace;letter-spacing:.14em;color:var(--acc)}
+.cap h2{font-size:34px;letter-spacing:-.02em;margin-top:6px}
+.win{position:absolute;left:64px;right:64px;top:140px;bottom:132px;background:#fff;color:#1b1b1f;border-radius:14px;overflow:hidden;box-shadow:0 30px 80px #000a;transform:translateY(24px);opacity:0;transition:all .7s cubic-bezier(.2,.8,.2,1)}
+.on .win{transform:none;opacity:1}
+.bar{height:38px;background:#ececf0;display:flex;align-items:center;gap:8px;padding:0 14px}
+.bar i{width:11px;height:11px;border-radius:50%;background:#c9c9d1}
+.bar span{margin-left:12px;flex:1;background:#fff;border-radius:6px;padding:3px 10px;font-size:13px;color:#555}
+.body{padding:26px 34px}
+label{display:block;font-size:13px;font-weight:600;color:#555;margin:14px 0 5px}
+.in{border:1.5px solid #cfcfd8;border-radius:8px;padding:11px 14px;font-size:18px;min-height:46px;transition:.3s}
+.in.hl{border-color:var(--acc);box-shadow:0 0 0 4px #ff6a5c33}
+.code{background:#ffe3df;border-radius:5px;padding:0 4px;font-weight:700}
+.tag{display:inline-block;background:#e8f7ef;color:#127a4a;border-radius:99px;padding:2px 12px;font-size:13px;font-weight:700}
+.btn{display:inline-block;background:#1b1b1f;color:#fff;border-radius:8px;padding:11px 22px;font-weight:600;transition:.2s}
+.btn.red{background:#c9463d}
+.btn.press{transform:scale(.95)}
+.note{position:absolute;background:var(--ink);color:#111;border-radius:10px;padding:9px 14px;font-weight:600;font-size:15px;opacity:0;transform:translateY(8px);transition:.4s;box-shadow:0 10px 30px #0008}
+.note.show{opacity:1;transform:none}
+.note.warn{background:var(--acc);color:#fff}
+.tabs{display:flex;gap:6px;border-bottom:1px solid #e3e3ea;margin-bottom:18px}
+.tabs b{padding:10px 18px;font-weight:600;color:#777;border-bottom:3px solid transparent}
+.tabs b.act{color:#1b1b1f;border-color:var(--acc)}
+.hide{display:none}
+.modal{position:absolute;left:50%;top:50%;width:520px;transform:translate(-50%,-46%) scale(.96);background:#fff;border-radius:14px;padding:24px;box-shadow:0 30px 80px #000a;opacity:0;transition:.35s;border:1px solid #ddd;pointer-events:none}
+.modal.show{opacity:1;transform:translate(-50%,-50%)}
+.row{display:flex;align-items:center;gap:14px;border:1px solid #e3e3ea;border-radius:10px;padding:14px 18px;margin-top:12px}
+.av{width:40px;height:40px;border-radius:50%;background:#dfe3f5;display:grid;place-items:center;font-weight:700;color:#3b4a9a}
+#cur{position:absolute;left:0;top:0;width:26px;height:26px;z-index:50;transition:transform .9s cubic-bezier(.45,.05,.2,1);pointer-events:none;filter:drop-shadow(0 3px 4px #0008)}
+.rip{position:absolute;width:14px;height:14px;margin:-7px;border-radius:50%;border:3px solid var(--acc);z-index:49;animation:rip .6s forwards}
+@keyframes rip{to{transform:scale(4);opacity:0}}
+#prog{position:absolute;left:64px;right:64px;bottom:22px;display:flex;gap:10px}
+#prog u{flex:1;height:5px;border-radius:9px;background:#2a2a33;overflow:hidden}
+#prog s{display:block;height:100%;width:0;background:var(--acc);transition:width .4s}
+#sub{position:absolute;left:0;right:0;bottom:40px;text-align:center;z-index:60}
+#sub span{display:inline-block;background:#000b;padding:8px 18px;border-radius:9px;font-size:20px;max-width:1000px}
+.title{position:absolute;inset:0;display:grid;place-content:center;text-align:center;gap:18px}
+.title h1{font-size:68px;letter-spacing:-.03em;line-height:1.05}
+.title p{color:var(--mute);font-size:24px}
+.flow{display:flex;gap:18px;justify-content:center;align-items:center;margin-top:8px;font-weight:700}
+.flow span{padding:10px 20px;border:1px solid var(--line);border-radius:99px;background:var(--card)}
+.big{font-size:120px;color:var(--ok)}
+</style>
+</head>
+<body>
+<svg id="cur" viewBox="0 0 24 24"><path d="M3 2l16 9-7 2-3 7z" fill="#fff" stroke="#111" stroke-width="1.4" stroke-linejoin="round"/></svg>
+
+<section class="scene" id="s0"><div class="title">
+  <div class="step">EZHIRE × CAREERVIET</div>
+  <h1>Test the job board sync<br>in 5 easy steps</h1>
+  <p>Staging test · about 10 minutes</p>
+  <div class="flow"><span>CareerViet</span>→<span>email</span>→<span>EZHire staging</span></div>
+</div></section>
+
+<section class="scene" id="s1">
+  <div class="cap"><div class="step">STEP 1 · ON CAREERVIET</div><h2>Create a test job with a code in the title</h2></div>
+  <div class="win"><div class="bar"><i></i><i></i><i></i><span>careerviet · Post a job</span></div>
+    <div class="body">
+      <label>Job title</label><div class="in" id="s1title"></div>
+      <label>Email that receives applications</label><div class="in" id="s1mail"></div>
+      <div style="margin-top:22px"><span class="btn" id="s1save">Post job</span></div>
+    </div>
+    <div class="note" id="s1n1" style="left:760px;top:92px">Job code at the END of the title</div>
+    <div class="note warn" id="s1n2" style="left:760px;top:190px">Use this email for CareerViet</div>
+  </div>
+</section>
+
+<section class="scene" id="s2">
+  <div class="cap"><div class="step">STEP 2 · ON EZHIRE STAGING</div><h2>Create the same job and add the job code</h2></div>
+  <div class="win"><div class="bar"><i></i><i></i><i></i><span>stg.ezhire.asia/en/jobs/753</span></div>
+    <div class="body">
+      <div style="font-size:24px;font-weight:700;margin-bottom:14px">[Dist 1 – HCM] Junior Career Advisor (26373)</div>
+      <div class="tabs"><b class="act" id="s2t0">Overview</b><b>Talents</b><b id="s2tab">Synced with Job Board</b></div>
+      <div id="s2p1" class="hide"><div style="text-align:right;margin-bottom:10px"><span class="btn" id="s2edit">✎ Edit</span></div><span class="btn red hide" id="s2add">+ Add Job Board</span>
+        <div class="row hide" id="s2row"><span class="tag">CareerViet</span><b>26373</b><span style="margin-left:auto;color:#127a4a;font-weight:700">✓ Connected</span></div></div>
+      <div id="s2p0" style="color:#777">Job overview…</div>
+    </div>
+    <div class="modal" id="s2modal"><div style="font-weight:700;font-size:20px">Add Job Board</div>
+      <label>Job Applied Source</label><div class="in" id="s2src"></div>
+      <label>Job Code</label><div class="in" id="s2code"></div>
+      <div style="margin-top:18px"><span class="btn red" id="s2ok">Add</span></div></div>
+    <div class="note warn" id="s2n" style="left:560px;top:60px">The code must be exactly the same on both sides</div>
+  </div>
+</section>
+
+<section class="scene" id="s3">
+  <div class="cap"><div class="step">STEP 3 · ON CAREERVIET</div><h2>Apply to your test job once (dummy name + dummy CV)</h2></div>
+  <div class="win"><div class="bar"><i></i><i></i><i></i><span>careerviet · Apply</span></div>
+    <div class="body">
+      <label>Full name</label><div class="in" id="s3name"></div>
+      <label>CV file</label><div class="in" id="s3cv" style="color:#999">Choose file…</div>
+      <div style="margin-top:22px"><span class="btn" id="s3go">Submit application</span></div>
+      <div id="s3done" class="hide" style="margin-top:18px"><span class="tag">✓ Application sent</span></div>
+    </div>
+  </div>
+</section>
+
+<section class="scene" id="s4">
+  <div class="cap"><div class="step">STEP 4 · ON EZHIRE STAGING</div><h2>Wait a few minutes, then check Talent Pool</h2></div>
+  <div class="win"><div class="bar"><i></i><i></i><i></i><span>stg.ezhire.asia/en/talents</span></div>
+    <div class="body">
+      <div class="tabs"><b class="act">Talent Pool</b><b>Selection Process</b></div>
+      <div class="row hide" id="s4row"><div class="av">TC</div><div><b>Test Candidate</b><div style="color:#777;font-size:14px">[Dist 1 – HCM] Junior Career Advisor (26373)</div></div><span class="tag" style="margin-left:auto">CareerViet</span></div>
+      <div id="s4wait" style="color:#777;margin-top:10px">⏳ Waiting for the notification email…</div>
+    </div>
+  </div>
+</section>
+
+<section class="scene" id="s5"><div class="title">
+  <div class="big">✓</div><h1>Tell us in the chat</h1><p>We will confirm the result together. Thank you!</p>
+</div></section>
+
+<div id="prog"><u><s></s></u><u><s></s></u><u><s></s></u><u><s></s></u><u><s></s></u></div>
+<div id="sub"><span hidden></span></div>
+
+<script>
+const $ = s => document.querySelector(s);
+window.speed = 1;
+const sleep = ms => new Promise(r => setTimeout(r, ms / window.speed));
+const cur = $('#cur');
+cur.style.transform = 'translate(1100px,640px)';
+
+const pos = el => { const r = el.getBoundingClientRect(); return [r.left + Math.min(r.width / 2, 120), r.top + r.height / 2]; };
+async function move(sel){ const [x, y] = pos($(sel)); cur.style.transform = `translate(${x}px,${y}px)`; await sleep(1000); }
+async function click(sel){
+  await move(sel);
+  const [x, y] = pos($(sel)), d = document.createElement('div');
+  d.className = 'rip'; d.style.left = x + 'px'; d.style.top = y + 'px'; document.body.append(d); setTimeout(() => d.remove(), 700);
+  $(sel).classList.add('press'); await sleep(200); $(sel).classList.remove('press');
+}
+async function type(sel, html, plain, ms = 55){
+  const el = $(sel); el.classList.add('hl'); el.textContent = '';
+  for (let i = 1; i <= plain.length; i++){ el.textContent = plain.slice(0, i); await sleep(ms); }
+  if (html) el.innerHTML = html;
+  el.classList.remove('hl');
+}
+const show = (sel, on = true) => $(sel).classList[on ? 'add' : 'remove']('show');
+const unhide = sel => $(sel).classList.remove('hide');
+const hide = sel => $(sel).classList.add('hide');
+
+const scenes = [
+  async () => { await sleep(300); },
+  async () => {
+    await sleep(700);
+    await type('#s1title', '[Dist 1 – HCM] Junior Career Advisor <span class="code">(26373)</span>', '[Dist 1 – HCM] Junior Career Advisor (26373)', 45);
+    show('#s1n1'); await sleep(900);
+    await type('#s1mail', null, 'vi-careerviet@ezhire.asia', 55);
+    show('#s1n2'); await sleep(700);
+    await click('#s1save'); await sleep(500);
+  },
+  async () => {
+    await sleep(500);
+    await click('#s2tab'); $('#s2t0').classList.remove('act'); $('#s2tab').classList.add('act'); hide('#s2p0'); unhide('#s2p1');
+    await click('#s2edit'); unhide('#s2add'); await click('#s2add'); show('#s2modal'); await sleep(400);
+    await type('#s2src', null, 'CareerViet', 70);
+    await type('#s2code', null, '26373', 120);
+    show('#s2n'); await sleep(900);
+    await click('#s2ok'); show('#s2modal', false); unhide('#s2row'); await sleep(900);
+  },
+  async () => {
+    await sleep(500);
+    await type('#s3name', null, 'Test Candidate', 60);
+    await click('#s3cv'); $('#s3cv').textContent = '📄 dummy_cv.pdf'; $('#s3cv').style.color = '#1b1b1f'; await sleep(400);
+    await click('#s3go'); unhide('#s3done'); await sleep(700);
+  },
+  async () => { await sleep(2600); hide('#s4wait'); unhide('#s4row'); await sleep(900); },
+  async () => { await sleep(300); }
+];
+
+// Plays each scene at least minDur[i] seconds; records real start times in window.starts.
+window.run = async (minDur, lines, speeds) => {
+  const bars = document.querySelectorAll('#prog s');
+  window.starts = [];
+  const t00 = performance.now();
+  for (let i = 0; i < scenes.length; i++){
+    window.speed = speeds ? speeds[i] : 1;
+    const t0 = performance.now();
+    window.starts.push((t0 - t00) / 1000);
+    document.querySelectorAll('.scene').forEach(s => s.classList.remove('on'));
+    $('#s' + i).classList.add('on');
+    const sub = $('#sub span'); sub.textContent = lines[i]; sub.hidden = false;
+    if (i >= 1 && i <= 4) bars[i - 1].style.width = '100%';
+    await scenes[i]();
+    const left = minDur[i] * 1000 - (performance.now() - t0);
+    if (left > 0) await new Promise(r => setTimeout(r, left));
+  }
+  window.total = (performance.now() - t00) / 1000;
+  window.done = true;
+};
+</script>
+</body>
+</html>

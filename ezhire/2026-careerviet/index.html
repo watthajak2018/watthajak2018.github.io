@@ -1,0 +1,218 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>CareerViet × EZHire · Test guide</title>
+<meta name="description" content="A 5-step guide to test the CareerViet job board sync on EZHire staging.">
+<script type="importmap">{"imports":{"three":"https://unpkg.com/three@0.160.0/build/three.module.js"}}</script>
+<style>
+:root{--bg:#09090c;--ink:#f5f5f7;--mute:#9b9ba8;--acc:#ff6a5c;--ok:#3ddc97;--line:#26262e;--card:#121217;color-scheme:dark}
+*{box-sizing:border-box;margin:0}
+html{scroll-behavior:smooth}
+body{background:var(--bg);color:var(--ink);font:17px/1.6 -apple-system,"Segoe UI",Helvetica,Arial,sans-serif;overflow-x:hidden}
+#gl{position:fixed;inset:0;width:100%;height:100%;z-index:0;pointer-events:none}
+main,header,footer{position:relative;z-index:1}
+.wrap{max-width:1080px;margin:0 auto;padding:0 24px}
+.eyebrow{font:600 13px ui-monospace,Menlo,monospace;letter-spacing:.16em;color:var(--acc);text-transform:uppercase}
+h1{font-size:clamp(44px,8vw,104px);line-height:.98;letter-spacing:-.04em;margin:18px 0 22px}
+h2{font-size:clamp(30px,4.5vw,52px);line-height:1.05;letter-spacing:-.03em;margin:10px 0 14px}
+p.lead{color:var(--mute);font-size:clamp(18px,2vw,22px);max-width:620px}
+.hero{min-height:100vh;display:flex;align-items:center}
+.hero .wrap{will-change:transform;width:100%}
+.pill{display:inline-flex;gap:10px;align-items:center;border:1px solid var(--line);background:#12121799;backdrop-filter:blur(8px);border-radius:99px;padding:8px 18px;font-weight:600;font-size:15px;margin:6px 8px 0 0}
+.cta{display:inline-block;margin-top:34px;background:var(--ink);color:#000;border-radius:99px;padding:15px 30px;font-weight:700;text-decoration:none;transition:transform .25s}
+.cta:hover{transform:translateY(-3px)}
+section{padding:14vh 0}
+.glass{background:#101015cc;backdrop-filter:blur(14px);border:1px solid var(--line);border-radius:22px}
+.step{display:grid;grid-template-columns:120px 1fr;gap:28px;padding:34px;margin-top:22px;opacity:0;transform:translateY(60px);transition:opacity .8s,transform .8s cubic-bezier(.2,.8,.2,1)}
+.step.in{opacity:1;transform:none}
+.num{font-size:96px;font-weight:800;letter-spacing:-.06em;line-height:.9;color:transparent;-webkit-text-stroke:1.5px var(--acc)}
+.step h3{font-size:28px;letter-spacing:-.02em;margin-bottom:8px}
+.step p{color:var(--mute)}
+.step ul{margin:12px 0 0 20px;color:var(--mute)}
+.step li{margin:4px 0}
+.shots{display:grid;grid-template-columns:repeat(2,1fr);gap:14px;margin:18px 0}
+.shots a{display:block;color:var(--mute);text-decoration:none;font-size:14px}
+.shots img{width:100%;display:block;border-radius:12px;border:1px solid rgba(255,255,255,.12);transition:transform .3s}
+.shots a:hover img{transform:scale(1.02)}
+.shots span{display:block;margin-top:6px}
+@media(max-width:700px){.shots{grid-template-columns:1fr}}
+code{font:600 .92em ui-monospace,Menlo,monospace;background:#ffffff14;border-radius:6px;padding:2px 8px;color:var(--ink)}
+.warn{margin-top:14px;border-left:3px solid var(--acc);padding:6px 14px;color:var(--ink);background:#ff6a5c14;border-radius:0 8px 8px 0}
+.video{border-radius:22px;overflow:hidden;border:1px solid var(--line);box-shadow:0 40px 120px #000c;margin-top:30px;background:#000}
+video{display:block;width:100%;height:auto}
+.flow{display:flex;flex-wrap:wrap;align-items:center;gap:14px;margin-top:28px;font-weight:700}
+.flow span.b{padding:12px 22px;border:1px solid var(--line);border-radius:99px;background:var(--card)}
+.flow span.a{color:var(--acc)}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:18px;margin-top:30px}
+.grid .glass{padding:26px}
+.grid h4{font-size:19px;margin-bottom:6px}
+.grid p{color:var(--mute);font-size:16px}
+.layer{position:absolute;pointer-events:none;border-radius:50%;filter:blur(70px);opacity:.35;will-change:transform}
+footer{padding:12vh 0 8vh;color:var(--mute);text-align:center}
+@media(max-width:700px){.step{grid-template-columns:1fr;padding:24px}.num{font-size:64px}}
+@media(prefers-reduced-motion:reduce){*{transition:none!important;scroll-behavior:auto!important}.step{opacity:1;transform:none}}
+</style>
+</head>
+<body>
+<canvas id="gl" aria-hidden="true"></canvas>
+
+<header class="hero">
+  <div class="layer" data-speed="-0.25" style="width:520px;height:520px;background:#ff3b2a;right:-120px;top:8vh"></div>
+  <div class="layer" data-speed="-0.5" style="width:420px;height:420px;background:#2a6bff;left:-140px;top:60vh"></div>
+  <div class="wrap" data-speed="0.18">
+    <div class="eyebrow">EZHire × CareerViet · Staging test</div>
+    <h1>Test the job<br>board sync.</h1>
+    <p class="lead">Five easy steps, about ten minutes. Post a test job on CareerViet, link it in EZHire staging, apply once, and watch the candidate arrive.</p>
+    <div class="flow" style="margin-top:34px">
+      <span class="b">CareerViet</span><span class="a">→</span><span class="b">email</span><span class="a">→</span><span class="b">EZHire staging</span>
+    </div>
+    <a class="cta" href="#video">Watch the 1-minute demo ↓</a>
+  </div>
+</header>
+
+<main>
+  <section id="video"><div class="wrap">
+    <div class="eyebrow">Demo video · English</div>
+    <h2>See it in 60 seconds</h2>
+    <p class="lead">A short walkthrough of all five steps, with voice and subtitles.</p>
+    <div class="video"><video controls preload="metadata" poster="poster.jpg" playsinline src="demo.mp4"></video></div>
+  </div></section>
+
+  <section id="steps"><div class="wrap">
+    <div class="eyebrow">Test steps · please do this for CareerViet</div>
+    <h2>Five steps</h2>
+
+    <article class="step glass"><div class="num">1</div><div>
+      <h3>On CareerViet, create a test job</h3>
+      <ul>
+        <li>Put a <b>job code at the end of the job title</b>.<br>Example: <code>[Dist 1 – HCM] Junior Career Advisor (26373)</code></li>
+        <li>You can use your own job number. Letters + numbers (like <code>EZVI001</code>) are also OK.</li>
+        <li>Set the email that receives applications to <code>vi-careerviet@ezhire.asia</code></li>
+        <li>If CareerViet allows more than one email, you can keep your usual email too.</li>
+      </ul></div></article>
+
+    <article class="step glass"><div class="num">2</div><div>
+      <h3>On EZHire staging, create the same job</h3>
+      <ul>
+        <li>Open the job. Click the <b>Synced with Job Board</b> tab (it is a tab, not a button) → <b>Edit</b> → <b>+ Add Job Board</b>.</li>
+        <li>Job Applied Source: <code>CareerViet</code></li>
+        <li>Job Code: <code>26373</code> (the code only, without brackets)</li>
+        <li>Click <b>Add</b>.</li>
+      </ul>
+      <div class="shots">
+        <a href="shots/01-job-detail.jpg" target="_blank" rel="noopener"><img src="shots/01-job-detail.jpg" alt="Open the job and find the Synced with Job Board tab" loading="lazy"><span>① Open the job → click the tab</span></a>
+        <a href="shots/02-synced-tab-edit.jpg" target="_blank" rel="noopener"><img src="shots/02-synced-tab-edit.jpg" alt="Click Edit on the Synced with Job Board tab" loading="lazy"><span>② Click Edit</span></a>
+        <a href="shots/03-add-job-board.jpg" target="_blank" rel="noopener"><img src="shots/03-add-job-board.jpg" alt="Click Add Job Board" loading="lazy"><span>③ Click + Add Job Board</span></a>
+        <a href="shots/04-select-careerviet-code.jpg" target="_blank" rel="noopener"><img src="shots/04-select-careerviet-code.jpg" alt="Select CareerViet, enter the job code, click Add" loading="lazy"><span>④ Select CareerViet, enter the code, click Add</span></a>
+      </div>
+      <div class="warn">The code must be exactly the same on CareerViet and in EZHire.</div></div></article>
+
+    <article class="step glass"><div class="num">3</div><div>
+      <h3>Apply to your test job once</h3>
+      <p>Back on CareerViet, apply with a <b>dummy name</b> and a <b>dummy CV</b>. We only need one real notification email from CareerViet.</p></div></article>
+
+    <article class="step glass"><div class="num">4</div><div>
+      <h3>Wait a few minutes, then check EZHire</h3>
+      <p>Open <b>Talent Pool</b> (or <b>Selection Process</b>) on EZHire staging. Your test candidate should appear with a <b>CareerViet</b> tag.</p></div></article>
+
+    <article class="step glass"><div class="num">5</div><div>
+      <h3>Tell us in the chat</h3>
+      <p>Let us know the result — or if the candidate does not appear after about 10 minutes. We will check together.</p></div></article>
+  </div></section>
+
+  <section><div class="wrap">
+    <div class="eyebrow">Before you start</div>
+    <h2>Good to know</h2>
+    <div class="grid">
+      <div class="glass"><h4>Staging site</h4><p>Use <code>stg.ezhire.asia</code>. Your browser asks for a username and password first — they were shared in the team chat.</p></div>
+      <div class="glass"><h4>Dummy data only</h4><p>Use a dummy name and CV so no real candidate data goes to staging.</p></div>
+      <div class="glass"><h4>Nothing changes on CareerViet</h4><p>EZHire only reads the notification email. Your usual email keeps working.</p></div>
+    </div>
+  </div></section>
+</main>
+
+<footer><div class="wrap">EZHire · CareerViet test guide · 2026</div></footer>
+
+<script type="module">
+import * as THREE from 'three';
+
+const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+const canvas = document.getElementById('gl');
+const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true });
+renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
+const scene = new THREE.Scene();
+const camera = new THREE.PerspectiveCamera(50, 1, 0.1, 100);
+camera.position.z = 6;
+
+// Tesseract: 16 vertices of a 4D cube, 32 edges, rotated in 4D then projected to 3D.
+const V = [];
+for (let i = 0; i < 16; i++) V.push([0, 1, 2, 3].map(b => (i >> b & 1) ? 1 : -1));
+const E = [];
+for (let i = 0; i < 16; i++) for (let b = 0; b < 4; b++) { const j = i ^ (1 << b); if (i < j) E.push([i, j]); }
+
+const geo = new THREE.BufferGeometry();
+const pos = new Float32Array(E.length * 6);
+geo.setAttribute('position', new THREE.BufferAttribute(pos, 3));
+const lines = new THREE.LineSegments(geo, new THREE.LineBasicMaterial({ color: 0xff6a5c, transparent: true, opacity: .85 }));
+scene.add(lines);
+const dotGeo = new THREE.BufferGeometry();
+const dotPos = new Float32Array(16 * 3);
+dotGeo.setAttribute('position', new THREE.BufferAttribute(dotPos, 3));
+const dots = new THREE.Points(dotGeo, new THREE.PointsMaterial({ color: 0xffffff, size: .09 }));
+scene.add(dots);
+
+function rot(a, b, t, p) { const c = Math.cos(t), s = Math.sin(t); const x = p[a], y = p[b]; p[a] = x * c - y * s; p[b] = x * s + y * c; }
+
+let scrollY = 0, mx = 0, my = 0;
+addEventListener('scroll', () => { scrollY = scrollY || 0; }, { passive: true });
+addEventListener('pointermove', e => { mx = e.clientX / innerWidth - .5; my = e.clientY / innerHeight - .5; }, { passive: true });
+
+function resize() {
+  renderer.setSize(innerWidth, innerHeight, false);
+  camera.aspect = innerWidth / innerHeight;
+  camera.updateProjectionMatrix();
+}
+addEventListener('resize', resize); resize();
+
+function frame(ms) {
+  const t = ms / 1000;
+  const prog = scrollY / Math.max(1, document.body.scrollHeight - innerHeight);
+  const a = reduce ? .6 : t * .35 + prog * 5;
+  const pts = V.map(v => {
+    const p = v.slice();
+    rot(0, 3, a, p); rot(1, 2, a * .7, p); rot(0, 1, prog * 3, p);
+    const w = 1 / (2.6 - p[3] * .7);
+    return [p[0] * w * 2.2, p[1] * w * 2.2, p[2] * w * 2.2];
+  });
+  E.forEach(([i, j], k) => { pos.set(pts[i], k * 6); pos.set(pts[j], k * 6 + 3); });
+  pts.forEach((p, i) => dotPos.set(p, i * 3));
+  geo.attributes.position.needsUpdate = true;
+  dotGeo.attributes.position.needsUpdate = true;
+  // The object drifts right and shrinks as the page scrolls, so text stays readable.
+  const side = innerWidth > 900 ? 3 - prog * 2 : 0;
+  lines.position.set(side, -prog * 2 + my * -.4, -prog * 2);
+  lines.rotation.y = mx * .5;
+  dots.position.copy(lines.position); dots.rotation.copy(lines.rotation);
+  renderer.render(scene, camera);
+  requestAnimationFrame(frame);
+}
+requestAnimationFrame(frame);
+
+// Parallax: [data-speed] elements move at a fraction of the scroll distance.
+const layers = [...document.querySelectorAll('[data-speed]')];
+function parallax() {
+  scrollY = window.scrollY;
+  if (reduce) return;
+  for (const el of layers) el.style.transform = `translate3d(0,${(scrollY * el.dataset.speed).toFixed(1)}px,0)`;
+}
+addEventListener('scroll', parallax, { passive: true }); parallax();
+
+// Reveal steps on scroll.
+const io = new IntersectionObserver(es => es.forEach(e => e.isIntersecting && (e.target.classList.add('in'), io.unobserve(e.target))), { threshold: .2 });
+document.querySelectorAll('.step').forEach(s => io.observe(s));
+</script>
+</body>
+</html>
