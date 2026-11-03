@@ -1,0 +1,457 @@
+<!doctype html>
+<html lang="th">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>Job Board Playground</title>
+<meta name="description" content="Prototype card: where to put the job code and application email on each job board.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Noto+Sans+Thai:wght@300;400;500;600;700&family=Google+Sans+Code&display=swap" rel="stylesheet">
+<style>
+/* VOICE work: a dev hand-off prototype
+   IDEA the real EZHire job page card, lifted out so devs can poke it
+   PICTURE the live job-board walkthrough itself
+   COLOUR EZHire light UI: canvas #f9fafb, white cards, brand red #c6473c, neutral grey wireframes
+   TYPE Poppins + Noto Sans Thai (matches the app)
+   LAYOUT title strip, then the card full width; dev notes below in two columns, stacked on phone */
+:root{color-scheme:light;--ez-shadow:0 2px 20px 5px rgba(0,0,0,.1)}
+/* Follows the current app tab (app/assets/stylesheets/jobs/show/job_board_connections.scss).
+   Same layout and sizes; only text/fill pairs below WCAG AA are swapped for AA-safe app tokens:
+   $red-roman fills -> #c6473c ($red-geraldine-dark), $red-salmon-dark step numbers -> #c6473c,
+   waiting #b57900 -> #8a5a00, connected green #3da755 -> #308242 ($green-japanese-laurel). */
+.crumb{display:flex;align-items:center;flex-wrap:wrap;gap:6px}
+.crumb i{font-size:12px;color:#6d717f}
+.crumb b{font-weight:500;color:#231f20}
+.ctx-lbl{font-size:13px;color:#6d717f;margin-bottom:12px}
+.jtabs{display:flex;gap:4px;overflow-x:auto;margin-bottom:16px;scrollbar-width:none}
+.jtabs span{flex:none;padding:8px 20px;border-radius:2rem;font-weight:500;color:#231f20;white-space:nowrap}
+.jtabs .on{background:#1d2830;color:#fff}
+.jtab{background:#f9fafb;border-radius:24px;padding:28px 24px;display:flex;flex-direction:column;gap:24px}
+.jtab h2{margin:0;font-size:17px;font-weight:500;color:#333}
+.jtab .sub{margin:6px 0 0;font-size:13px;font-weight:300;color:#666}
+.rows{list-style:none;margin:16px 0 0;padding:0;display:flex;flex-direction:column;gap:10px}
+.row{background:#fff;border-radius:12px;display:flex;align-items:center;justify-content:space-between;gap:16px;padding:14px 16px;flex-wrap:wrap}
+.row .nm{display:flex;align-items:center;gap:10px}
+.row strong{font-weight:500;font-size:15px;color:#333}
+.row .cnt{background:#f7f7f7;border-radius:999px;color:#4d5461;font-weight:500;font-size:11px;padding:2px 8px}
+.row .meta{margin:6px 0 0;font-size:11px;font-weight:300;color:#666;overflow-wrap:anywhere}
+.row .remind{margin:6px 0 0;font-size:12px;font-weight:300;color:#c6473c}
+.row .acts{display:flex;align-items:center;gap:8px;flex:none}
+.st-wait{border-radius:999px;font-weight:500;font-size:11px;padding:3px 10px;background:#ffe5b0;color:#8a5a00}
+.acts i{font-size:16px;color:#444}
+.wcard{background:#fff;border:1px solid #e8e8e8;border-radius:16px;padding:28px 24px;display:flex;flex-direction:column;gap:20px}
+.whead{display:flex;align-items:center;gap:10px}
+.whead i{font-size:24px;color:#db6258}
+.whead h3{margin:0;font-size:16px;font-weight:500;color:#333}
+.wdesc{margin:6px 0 0 34px;font-size:13px;font-weight:300;color:#666}
+.cfields{display:flex;align-items:flex-end;gap:12px;flex-wrap:wrap}
+.cfield{flex:1 1 240px;display:flex;flex-direction:column;gap:6px}
+.cfield label{font-size:13px;font-weight:500;color:#333}
+.fsel{height:44px;border:1px solid #d2d5db;border-radius:999px;padding:0 16px;display:flex;align-items:center;justify-content:space-between;color:#6d717f;font-size:13px;background:#fff}
+.csub{height:44px;padding:0 28px;border-radius:999px;background:#c6473c;color:#fff;font-weight:500;font-size:13px;display:inline-flex;align-items:center}
+.ccount{margin:0;font-size:12px;font-weight:300;color:#666}
+/* annotation layer = the designer's help-page style (Job Board Connect 7.png): #ff1271 box + #ffcdce callout. Only marks "new". */
+.isnew{position:relative;outline:2px solid #ff1271;outline-offset:6px;border-radius:16px}
+.newtag{position:absolute;top:-21px;right:18px;z-index:7;background:#ffcdce;color:#231f20;font-weight:500;font-size:13px;line-height:20px;padding:4px 14px;border-radius:12px}
+.fcol{flex:999 1 520px;align-self:flex-start}
+.fcol .frame{width:100%}
+.ghelp{margin:0;font-size:13px;font-weight:300;color:#666;display:flex;gap:4px;flex-wrap:wrap}
+.ghelp a{color:#c6473c;font-weight:500;text-decoration:none}
+.ghelp a:hover,.ghelp a:focus-visible{text-decoration:underline}
+#pg .gsteps{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:20px}
+#pg .gstep{display:flex;flex-direction:column;gap:16px}
+#pg .gtitle{display:flex;align-items:center;gap:12px;font-size:13px;font-weight:500;color:#333}
+#pg .gnum{flex:none;width:28px;height:28px;border-radius:50%;background:#c6473c;color:#fff;display:inline-flex;align-items:center;justify-content:center;font-size:12px}
+#pg .gcopy{display:flex;align-items:center;gap:10px}
+#pg .gval{flex:1;max-width:344px;background:#f9fafb;border:1px solid #d2d5db;border-radius:16px;color:#4d5461;font:13px "Google Sans Code","Noto Sans Thai",monospace;padding:12px 14px;overflow-wrap:anywhere}
+#pg .cp{display:inline-flex;align-items:center;gap:6px;min-height:32px;min-width:32px;padding:0 6px;border:0;border-radius:8px;background:transparent;color:#c6473c;font-size:13px;font-weight:300}
+#pg .cp i{font-size:20px}
+#pg .ghint{margin:0;font-size:11px;font-weight:300;color:#666}
+#pg .gstatus{display:flex;align-items:center;gap:8px;margin:0;font-size:13px;font-weight:300;font-style:italic;color:#666}
+#pg .gstatus.connected{color:#308242;font-style:normal}
+#pg .gstatus i{font-size:20px}
+#pg .num i{font-size:13px}
+@media(max-width:600px){.jtab{padding:20px 10px;border-radius:20px}.wcard{padding:20px 16px}.wdesc{margin-left:0}.isnew{outline-offset:3px}#pg .wrap .box{padding:14px 12px}#pg .gval{font-size:12px;padding:10px 12px;overflow-wrap:normal;word-break:normal}#pg .gcopy{gap:4px}}
+#pg .num i{font-size:13px}
+*{box-sizing:border-box;min-width:0}
+body{background:#f9fafb;color:#231f20;font:15px/1.55 Poppins,"Noto Sans Thai",system-ui,sans-serif;overflow-x:clip;margin:0}
+.band{padding-block:28px;padding-left:max(5vw,16px,env(safe-area-inset-left,0px));padding-right:max(5vw,16px,env(safe-area-inset-right,0px))}
+.inner{max-width:1240px;margin:0 auto}
+.top{background:#fff;border-bottom:1px solid #e5e7ea}
+.top h1{margin:0;font-size:clamp(26px,3.2vw,34px);line-height:1.15;letter-spacing:-.01em;font-weight:600}
+.top p{margin:6px 0 0;color:#4b5563;max-width:760px}
+.crumb{font-size:13px;color:#6d717f;margin-bottom:6px}
+.badges{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}
+.badge{font-size:12px;font-weight:600;padding:3px 10px;border-radius:999px;background:#fbe7e5;color:#a6382a}
+.badge.g{background:#f3f4f6;color:#4b5563}
+/* playground card */
+#pg{font-family:Poppins,"Noto Sans Thai",system-ui,sans-serif;background:#fff;border:1px solid #e8e8e8;border-radius:16px;padding:28px 24px;display:flex;flex-direction:column;gap:20px;font-size:14px}
+#pg h2{margin:0;font-size:17px;line-height:24px;font-weight:600}
+#pg p{margin:0}
+#pg button{font-family:inherit;cursor:pointer}
+#pg .wrap{display:flex;flex-wrap:wrap;gap:20px;align-items:flex-start}
+#pg .side{flex:1 1 340px;max-width:460px;display:flex;flex-direction:column;gap:16px}
+#pg .box{border:1px solid #e5e7ea;border-radius:16px;padding:18px;display:flex;flex-direction:column;gap:12px}
+#pg .lbl{font-size:13px;font-weight:600;color:#4b5563}
+#pg .muted{font-size:13px;color:#6d717f}
+#pg .chip{height:36px;padding:0 16px;border-radius:999px;font-size:13px;font-weight:300;background:#f7f7f7;color:#444;border:1px solid #e8e8e8}
+#pg .chip.connected{background:#fff;border-color:#db6258;color:#c6473c;font-weight:500}
+#pg .chip[aria-pressed=true]{background:#c6473c;border-color:#c6473c;color:#fff;font-weight:500}
+#pg .chip:focus-visible,#pg .srow:focus-visible,#pg .ctl:focus-visible,#pg .pri:focus-visible,#pg .cp:focus-visible{outline:2px solid #c6473c;outline-offset:2px}
+#pg ol{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:4px}
+#pg .srow{width:100%;display:flex;gap:10px;align-items:flex-start;padding:8px 12px;border-radius:12px;border:0;background:transparent;color:#231f20;text-align:left;font-size:13px;line-height:20px}
+#pg .srow,#pg .chip,#pg .num{transition:background-color .2s,color .2s,border-color .2s}
+#pg .srow:hover{background:#f9fafb}
+#pg .srow.on{background:#fbe7e5}
+#pg .num{flex:none;width:24px;height:24px;border-radius:999px;display:inline-flex;align-items:center;justify-content:center;font-size:12px;font-weight:600;background:#f9fafb;color:#6d717f;border:1px solid #e5e7ea}
+#pg .srow.on .num{background:#c6473c;color:#fff;border-color:#c6473c}
+#pg .wrap .box{background:#fff;border-color:#e8e8e8}
+#pg .btitle{font-size:15px;font-weight:500;color:#333}
+#pg .boards{border:1px solid #e8e8e8;flex-direction:row;flex-wrap:wrap;align-items:center;gap:12px 20px;padding:16px 20px}
+#pg .bchips{display:flex;flex-wrap:wrap;gap:8px}
+#pg .boards .gstatus{margin-left:auto}
+@media(max-width:760px){#pg .boards{flex-direction:column;align-items:flex-start}#pg .boards .gstatus{margin-left:0}}
+#pg details.vals>summary{list-style:none;cursor:pointer;display:flex;align-items:center;justify-content:space-between;gap:8px;border-radius:8px}
+#pg details.vals>summary::-webkit-details-marker{display:none}
+#pg details.vals>summary i{font-size:18px;color:#666;transition:transform .2s}
+#pg details.vals[open]>summary i{transform:rotate(180deg)}
+#pg details.vals>summary:focus-visible{outline:2px solid #c6473c;outline-offset:4px}
+#pg details.vals:not([open]){gap:0}
+@media(prefers-reduced-motion:reduce){#pg details.vals>summary i{transition:none}}
+#pg .srow.done .num{background:#eaf5ec;color:#308242;border-color:#eaf5ec}
+#pg .ctl{min-height:40px;min-width:44px;padding:0 12px;border-radius:2rem;display:inline-flex;align-items:center;justify-content:center;border:1px solid #e5e7ea;background:#fff;color:#231f20;font-size:14px}
+#pg .pri{min-height:40px;padding:0 20px;border-radius:2rem;border:0;background:#c6473c;color:#fff;font-size:14px;font-weight:600}
+#pg .note{font-size:13px;line-height:20px;padding:12px 16px;border-radius:12px}
+#pg .frame{border-radius:16px;overflow:hidden;border:1px solid #d2d5db;background:#fff;display:flex;flex-direction:column}
+#pg .bar{display:flex;align-items:center;gap:12px;padding:10px 16px;background:#f3f4f6;border-bottom:1px solid #d2d5db}
+#pg .dots span{display:inline-block;width:10px;height:10px;border-radius:999px;background:#d2d5db;margin-right:6px}
+#pg .url{flex:1;font-size:13px;color:#4b5563;background:#fff;border-radius:8px;padding:4px 12px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+#pg .stage{position:relative;height:640px;background:#F3F4F6;overflow:hidden;color:#111827}
+#pg .scr{position:absolute;inset:0;background:#fff;animation:pgfade .3s ease;overflow:hidden}
+#pg .fld{min-height:40px;border:1px solid #D1D5DB;border-radius:8px;padding:9px 12px;font-size:14px;background:#fff;max-width:560px;overflow:hidden;white-space:nowrap;text-overflow:clip}
+#pg .ph{color:#9CA3AF}
+#pg .hl{animation:pgpulse 1.2s ease-in-out infinite;position:relative;z-index:1}
+#pg .caret{display:inline-block;width:2px;height:18px;background:#111827;vertical-align:middle;margin-left:1px;animation:pgblink 1s step-end infinite}
+#pg .dark{padding:10px 22px;border-radius:8px;background:#374151;color:#fff;font-size:14px;font-weight:600;display:inline-block}
+#pg .ghost{padding:8px 14px;border-radius:8px;border:1px solid #D1D5DB;background:#fff;font-size:13px;display:inline-block;white-space:nowrap}
+#pg .rd{width:18px;height:18px;border-radius:999px;border:2px solid #9CA3AF;flex:none;margin-top:2px}
+#pg .rd.on{border:5px solid #374151}
+#pg .cbx{width:18px;height:18px;border:2px solid #9CA3AF;border-radius:4px;display:inline-flex;align-items:center;justify-content:center;font-size:12px;line-height:1;color:#fff;flex:none;margin-top:2px}
+#pg .cbx.on{background:#374151;border-color:#374151}
+#pg .cl{display:flex;gap:10px;align-items:flex-start;padding:6px;margin:-6px;border-radius:8px}
+#pg .frow{display:grid;grid-template-columns:110px minmax(0,1fr);gap:12px;align-items:center}
+#pg .cap{position:absolute;left:16px;right:16px;bottom:16px;display:flex;align-items:center;gap:12px;padding:12px 16px;border-radius:12px;background:#231f20;color:#fff;z-index:5}
+#pg .toast{position:absolute;top:16px;left:50%;transform:translateX(-50%);padding:10px 18px;border-radius:12px;background:#ffcdce;color:#231f20;font-size:14px;font-weight:500;box-shadow:0 4px 16px rgba(35,31,32,.12);z-index:6;max-width:calc(100% - 32px);animation:pgfade .2s ease}
+#pg .on-pill{font-size:11px;font-weight:700;color:#fff;background:#308242;border-radius:999px;padding:3px 7px}
+#pg table{border-collapse:collapse;width:100%}
+#pg td,#pg th{padding:12px 10px;text-align:left;border-bottom:1px solid #E5E7EB;font-size:13px;vertical-align:middle}
+#pg th{font-weight:600;color:#111827}
+#pg .g3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
+@keyframes pgpulse{0%,100%{box-shadow:0 0 0 3px #c6473c,0 0 0 6px rgba(198,71,60,.18)}50%{box-shadow:0 0 0 3px #c6473c,0 0 0 11px rgba(198,71,60,.06)}}
+@keyframes pgblink{0%,49%{opacity:1}50%,100%{opacity:0}}
+@keyframes pgfade{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:none}}
+@media(prefers-reduced-motion:reduce){#pg .hl,#pg .scr,#pg .toast{animation:none}#pg .hl{box-shadow:0 0 0 3px #c6473c}}
+@media(max-width:600px){#pg{padding:16px}#pg .stage{height:600px}#pg .g3{grid-template-columns:minmax(0,1fr)}#pg .frow{grid-template-columns:minmax(0,1fr);gap:4px}#pg .frow>div:first-child{text-align:left!important}#pg .scr{padding:20px!important}}
+/* dev notes */
+.notes{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,420px),1fr));gap:20px}
+.card{background:#fff;border:0;border-radius:24px;box-shadow:var(--ez-shadow);padding:22px 24px}
+.card h2{margin:0 0 10px;font-size:18px;line-height:1.3;font-weight:600}
+.card h3{margin:16px 0 6px;font-size:15px;font-weight:600}
+.card p,.card li{color:#4b5563}
+.card ul,.card ol{margin:6px 0 0;padding-left:20px}
+.card li{margin:4px 0}
+code{font-family:ui-monospace,Menlo,Consolas,monospace;font-size:13px;background:#f9fafb;border:1px solid #e5e7ea;border-radius:6px;padding:1px 5px;overflow-wrap:anywhere}
+pre{overflow-x:auto;background:#231f20;color:#e5e7ea;border-radius:10px;padding:14px 16px;font:12.5px/1.6 ui-monospace,Menlo,Consolas,monospace;margin:8px 0 0}
+.tbl{overflow-x:auto}
+.tbl table{border-collapse:collapse;width:100%;font-size:13px}
+.tbl th,.tbl td{text-align:left;padding:8px 10px;border-bottom:1px solid #e5e7ea;vertical-align:top}
+.tbl th{color:#4b5563;font-weight:600}
+.st{font-size:12px;font-weight:600;padding:2px 8px;border-radius:999px;white-space:nowrap}
+.st.ok{background:#eaf5ec;color:#308242}
+.st.part{background:#FFF4DB;color:#7A4B00}
+.st.no{background:#fdf4f3;color:#a6382a}
+.foot{font-size:13px;color:#6d717f}
+</style>
+<link rel="stylesheet" href="https://unpkg.com/@phosphor-icons/web@2.1.1/src/regular/style.css">
+<link rel="stylesheet" href="https://unpkg.com/@phosphor-icons/web@2.1.1/src/light/style.css">
+<link rel="stylesheet" href="https://unpkg.com/@phosphor-icons/web@2.1.1/src/bold/style.css">
+<link rel="stylesheet" href="https://unpkg.com/@phosphor-icons/web@2.1.1/src/fill/style.css">
+</head>
+<body>
+<header class="band top">
+  <div class="inner">
+    <nav class="crumb" aria-label="breadcrumb">Dashboard<i class="ph ph-caret-right" aria-hidden="true"></i>Jobs<i class="ph ph-caret-right" aria-hidden="true"></i><b>Accountant (Demo) (EZ1588)</b></nav>
+    <h1>Job Board Playground</h1>
+    <p>ต้นแบบส่วนที่จะเพิ่มใน "วิธีเชื่อมต่อ Job Board" ของแท็บ "เชื่อมข้อมูลกับ Job Board": ภาพจำลองทีละขั้นว่าต้องวางชื่อตำแหน่งงานและอีเมลตรงไหนบนหน้าของแต่ละ board ต่อจาก 3 ขั้นตอนเดิม</p>
+    <div class="badges"><span class="badge">Prototype</span><span class="badge g">ไม่ใช่โค้ด production</span><span class="badge g">ข้อมูลตำแหน่งงานเป็นตัวอย่าง</span></div>
+  </div>
+</header>
+
+<main>
+<section class="band">
+  <div class="inner">
+    <div class="ctx-lbl">ภาพจำลองแท็บ "เชื่อมข้อมูลกับ Job Board" เวอร์ชันปัจจุบัน ส่วนที่เพิ่มใหม่มีกรอบชมพู</div>
+    <div class="jtabs" role="presentation"><span>ข้อมูลตำแหน่งงาน</span><span>ผู้สมัคร</span><span class="on">เชื่อมข้อมูลกับ Job Board (1)</span></div>
+    <div class="jtab">
+      <section inert>
+        <h2>Job Board ที่เชื่อมต่อแล้ว</h2>
+        <p class="sub">รายการ Job Board ที่เชื่อมต่อกับตำแหน่งงานนี้</p>
+        <ul class="rows">
+          <li class="row">
+            <div>
+              <div class="nm"><strong>JobBKK</strong><span class="cnt">0 ใบสมัคร</span></div>
+              <p class="meta">รหัสตำแหน่งงาน: EZ1588 • อีเมล: th-jobbkk@ezhire.asia • ชื่อตำแหน่งงาน: “Accountant (Demo) (EZ1588)”</p>
+              <p class="remind">อย่าลืมเพิ่มอีเมลด้านบนลงในบัญชี Job Board ของคุณ เพื่อดำเนินการตั้งค่าให้เสร็จสมบูรณ์</p>
+            </div>
+            <div class="acts"><span class="st-wait">รอใบสมัคร</span><i class="ph-bold ph-dots-three-vertical" aria-hidden="true"></i></div>
+          </li>
+        </ul>
+      </section>
+      <div class="wcard" inert>
+        <div><div class="whead"><i class="ph ph-link" aria-hidden="true"></i><h3>เชื่อมต่อ Job Board</h3></div>
+        <p class="wdesc">เลือก Job Board แล้ว EZHire จะสร้างรหัสตำแหน่งงานให้อัตโนมัติ</p></div>
+        <div class="cfields"><div class="cfield"><label>Job Board</label><div class="fsel">เลือก Job Board<i class="ph ph-caret-down" aria-hidden="true"></i></div></div><span class="csub">เชื่อมต่อ</span></div>
+        <p class="ccount">เชื่อมต่อแล้ว 1 จาก 4 Job Board</p>
+      </div>
+    <section id="pg" aria-labelledby="pg-h">
+      <div>
+        <div class="whead"><i class="ph ph-question" aria-hidden="true"></i><h3 id="pg-h">วิธีเชื่อมต่อ Job Board</h3></div>
+        <p class="wdesc">ทำตามขั้นตอนต่อไปนี้เพื่อเชื่อมต่อบัญชี Job Board ของคุณกับ EZHire</p>
+      </div>
+      <div class="box boards">
+        <div class="btitle">Job board</div>
+        <div data-slot="chips" class="bchips"></div>
+        <p class="gstatus" data-slot="status"></p>
+      </div>
+      <div class="wrap">
+        <div class="side">
+          <details class="box vals" open>
+            <summary class="btitle"><span>ค่าที่ต้องเอาไปใส่บน <span data-slot="bn"></span></span><i class="ph ph-caret-down" aria-hidden="true"></i></summary>
+            <ol class="gsteps">
+        <li class="gstep"><div class="gtitle"><span class="gnum">1</span><span>ใช้ชื่อตำแหน่งงานนี้เมื่อประกาศงานบน “<span data-slot="bn"></span>”</span></div>
+          <div class="gcopy"><span class="gval">Accountant (Demo) (EZ1588)</span><button type="button" class="cp" data-copy="title" aria-label="คัดลอก"><i class="ph ph-copy-simple" aria-hidden="true"></i><span class="copied" aria-live="polite"></span></button></div>
+          <p class="ghint">รหัส (EZ1588) ช่วยให้ EZHire จับคู่ใบสมัครแต่ละใบกับตำแหน่งงานที่ถูกต้อง คุณไม่จำเป็นต้องใส่รหัสนี้ในชื่อตำแหน่งงานใน EZHire</p></li>
+        <li class="gstep"><div class="gtitle"><span class="gnum">2</span><span>วางอีเมลนี้ในการตั้งค่าการรับใบสมัครของ Job Board, “รับสมัครทางอีเมล์”</span></div>
+          <div class="gcopy"><span class="gval" data-slot="email"></span><button type="button" class="cp" data-copy="email" aria-label="คัดลอก"><i class="ph ph-copy-simple" aria-hidden="true"></i><span class="copied" aria-live="polite"></span></button></div></li>
+        <li class="gstep"><div class="gtitle"><span class="gnum">3</span><span>เรียบร้อย! บันทึกการตั้งค่า แล้วเราจะแจ้งให้คุณทราบเมื่อมีใบสมัครแรกเข้ามา</span></div></li>
+      </ol>
+          </details>
+          <div class="box isnew"><span class="newtag">ใหม่</span>
+            <div style="display:flex;justify-content:space-between;align-items:center"><div class="btitle">ขั้นตอนบน <span data-slot="bn"></span></div><div class="muted" data-slot="count"></div></div>
+            <ol data-slot="steps"></ol>
+            <div style="display:flex;gap:8px"><button type="button" class="ctl" data-act="prev" aria-label="ขั้นก่อนหน้า"><i class="ph ph-caret-left" aria-hidden="true"></i></button><button type="button" class="pri" data-act="play">หยุด</button><button type="button" class="ctl" data-act="next" aria-label="ขั้นถัดไป"><i class="ph ph-caret-right" aria-hidden="true"></i></button></div>
+          </div>
+          <div data-slot="note"></div>
+        </div>
+        <div class="fcol isnew"><span class="newtag">ส่วนที่เพิ่มใหม่</span>
+        <div class="frame" aria-label="ภาพจำลองหน้าจอ job board">
+          <div class="bar"><span class="dots" aria-hidden="true"><span></span><span></span><span></span></span><span class="url" data-slot="url"></span></div>
+          <div class="stage" data-slot="stage"></div>
+        </div>
+        </div>
+      </div>
+      <p class="ghelp">ต้องการความช่วยเหลือในการตั้งค่าใช่ไหม? <a href="#" onclick="return false">ติดต่อทีม EZHire</a></p>
+    </section>
+    </div>
+  </div>
+</section>
+
+<section class="band" style="padding-top:0">
+  <div class="inner notes">
+    <article class="card">
+      <h2>สำหรับ Dev: สิ่งที่ต้องทำ</h2>
+      <ol>
+        <li>เพิ่มส่วน "ดูทีละขั้น" ใน <code>jobs/show/_job_board_guide_panel.html.slim</code> ต่อจาก <code>ol.guide-steps</code> (1 panel ต่อ board) ใช้ Stimulus <code>jobs--job-board-connections</code> เดิม: <code>select</code> สลับ panel อยู่แล้ว</li>
+        <li>ใช้ข้อมูลจาก helper เดิม: <code>job_board_code(job)</code>, <code>job_board_mailbox(key)</code>, <code>job_board_select_options</code> แทนค่าตัวอย่าง <code>Accountant (Demo) (EZ1588)</code></li>
+        <li>เก็บขั้นตอนของแต่ละ board เป็น config (ตัวอย่างด้านขวา) แยกจาก view เพื่อแก้ข้อความได้ง่าย</li>
+        <li>เพิ่ม i18n ใต้ <code>jobs.show.job_board_connection</code> ให้ครบ 6 ภาษา (th, en, ja, vi, zh-cn, zh-tw)</li>
+      </ol>
+      <h3>พฤติกรรม</h3>
+      <ul>
+        <li>เล่นอัตโนมัติ: 1 tick = 80ms, ขั้นปกติ 26 ticks, ขั้นพิมพ์ = ความยาวข้อความ ÷ 1.5 + 22 ticks แล้ววนกลับขั้นแรก</li>
+        <li>เปลี่ยน board: เริ่มขั้นที่ 1 และเล่นอัตโนมัติ (board แรกที่เลือกคือ board ที่เชื่อมแล้ว เหมือน <code>_job_board_guide</code>)</li>
+        <li>กดขั้นในรายการ หรือปุ่มลูกศร: หยุดเล่นและแสดงขั้นนั้นแบบเต็ม</li>
+        <li>เคารพ <code>prefers-reduced-motion</code></li>
+      </ul>
+      <h3>Contrast ในแท็บจริงที่ต่ำกว่า WCAG AA (4.5:1)</h3>
+      <p>ต้นแบบนี้ใช้สีทดแทนในวงเล็บ (เป็นสีที่มีในแอปแล้ว)</p>
+      <ul>
+        <li>ปุ่ม pill ที่เลือก และปุ่ม "เชื่อมต่อ": ขาวบน <code>$red-roman</code> 3.56 (<code>$red-geraldine-dark</code> 4.81)</li>
+        <li>เลขขั้นตอน: ขาวบน <code>$red-salmon-dark</code> 2.52 (<code>$red-geraldine-dark</code>)</li>
+        <li>"รอใบสมัคร": <code>$yellow-dark-goldenrod</code> บน <code>$yellow-moccasin</code> 3.0 (<code>#8a5a00</code> 4.82)</li>
+        <li>"เชื่อมต่อแล้ว" ใน guide: <code>$green-chateau</code> 3.06 (<code>$green-japanese-laurel</code> 4.78)</li>
+        <li>ข้อความเตือนและลิงก์ <code>$red-roman</code> บนพื้นขาว 3.56 (<code>$red-geraldine-dark</code>)</li>
+      </ul>
+    </article>
+    <article class="card">
+      <h2>สถานะข้อมูลของแต่ละ board</h2>
+      <div class="tbl"><table>
+        <thead><tr><th>Board</th><th>อีเมล</th><th>อ้างอิงหน้าจอจริง</th></tr></thead>
+        <tbody>
+          <tr><td>JobsDB</td><td><code>th-jobsdb@ezhire.asia</code></td><td><span class="st ok">ครบ</span> Manage job › Notifications › Every application email</td></tr>
+          <tr><td>JobThai</td><td><code>th-jobthai@ezhire.asia</code></td><td><span class="st part">บางส่วน</span> ส่วนวิธีการสมัครและรายการตำแหน่ง; ยังไม่เห็นช่องชื่อตำแหน่งและปุ่มบันทึก</td></tr>
+          <tr><td>JobBKK</td><td><code>th-jobbkk@ezhire.asia</code></td><td><span class="st part">บางส่วน</span> รายการตำแหน่งและขั้นตอนที่ 9; ยังไม่เห็นช่องชื่อตำแหน่งและปุ่มบันทึก</td></tr>
+          <tr><td>JobTopGun</td><td><code>th-jobtopgun@ezhire.asia</code></td><td><span class="st no">ยังไม่มี</span> ฟอร์มทั่วไป</td></tr>
+        </tbody>
+      </table></div>
+      <h3>ตัวอย่าง config ของ board</h3>
+<pre>{
+  "id": "jobbkk",
+  "name": "JobBKK",
+  "email": "th-jobbkk@ezhire.asia",
+  "steps": [
+    { "screen": "bk-list",  "target": "edit",  "caption_th": "ไปที่เมนู อัปเดต/แก้ไขตำแหน่งงาน แล้วกด แก้ไข" },
+    { "screen": "bk-form",  "target": "title", "type": "title", "caption_th": "ใส่ ({code}) ต่อท้ายชื่อตำแหน่งงาน" },
+    { "screen": "bk-apply", "target": "viajb", "caption_th": "ติ๊ก รับสมัครงานผ่านทาง Jobbkk.com" },
+    { "screen": "bk-apply", "target": "add",   "caption_th": "กด + เพิ่มอีเมล" },
+    { "screen": "bk-apply", "target": "email", "type": "email", "caption_th": "พิมพ์ {email}" },
+    { "screen": "bk-apply", "target": "save",  "caption_th": "กดบันทึกการแก้ไข" }
+  ]
+}</pre>
+      <p class="foot" style="margin-top:10px">ภาพหน้าจอ board ในต้นแบบเป็นภาพจำลองสีเทาแบบย่อ ไม่ใช้โลโก้หรือสีของแบรนด์ ถ้าทำของจริงจะใช้ GIF ที่อัดจากหน้าจริงแทนก็ได้</p>
+    </article>
+  </div>
+</section>
+</main>
+
+<script>
+{
+const BOARDS=[
+ {id:'jobsdb',name:'JobsDB',email:'th-jobsdb@ezhire.asia',kind:'seek',note:['ok','ขั้นตอนนี้อ้างอิงจากหน้าจอ JobsDB (SEEK Employer) จริง']},
+ {id:'jobthai',name:'JobThai',email:'th-jobthai@ezhire.asia',kind:'jt',note:['ok','อ้างอิงจากหน้าจอ JobThai จริง: ส่วนวิธีการสมัคร และรายการตำแหน่งงาน (ช่องชื่อตำแหน่งและปุ่มบันทึกยังเป็นภาพร่าง)']},
+ {id:'jobbkk',name:'JobBKK',email:'th-jobbkk@ezhire.asia',kind:'bk',note:['ok','อ้างอิงจากหน้าจอ JobBKK จริง: รายการตำแหน่งงาน และขั้นตอนที่ 9 การตั้งค่ารับใบสมัครงาน (ช่องชื่อตำแหน่งและปุ่มบันทึกยังเป็นภาพร่าง)']},
+ {id:'jobtopgun',name:'JobTopGun',email:'th-jobtopgun@ezhire.asia',kind:'post',note:['bad','หน้าจอ JobTopGun เป็นแบบร่างทั่วไป ยังไม่ได้เทียบกับเมนูจริง']}];
+const JOB={name:'Accountant (Demo)',code:'EZ1588'};
+const CONNECTED=new Set(['jobbkk']);
+const S={board:'jobbkk',step:0,tick:0,playing:true};
+const root=document.getElementById('pg');
+const $=s=>root.querySelector(s);
+const title=`${JOB.name} (${JOB.code})`;
+const esc=s=>String(s).replace(/[<>&"']/g,c=>({'<':'&lt;','>':'&gt;','&':'&amp;','"':'&quot;',"'":'&#39;'}[c]));
+function model(){const b=BOARDS.find(x=>x.id===S.board); const C=JOB.code, E=b.email; let steps;
+ if(b.kind==='seek') steps=[
+  {scr:'form',t:'title',type:'title',cap:`ไปที่ Create a job ad (หรือ Edit job) แล้วพิมพ์ Job title ให้มี (${C}) ต่อท้าย`},
+  {scr:'job',t:'manage',cap:'เปิดประกาศงานนั้น แล้วคลิก Manage job'},
+  {scr:'menu',t:'notif',cap:'เลือก Notifications'},
+  {scr:'modal',t:'radio',cap:'เลือก Every application email'},
+  {scr:'modal',t:'email',type:'email',cap:`วาง ${E} ในช่องอีเมล`},
+  {scr:'modal',t:'save',cap:'กด Save ใบสมัครใหม่จะเข้า EZHire อัตโนมัติ'}];
+ else if(b.kind==='jt') steps=[
+  {scr:'jt-form',t:'title',type:'title',cap:`ในหน้าลงประกาศ/แก้ไขตำแหน่งงาน ใส่ (${C}) ต่อท้ายชื่อตำแหน่ง`},
+  {scr:'jt-apply',t:'special',cap:'เลื่อนลงไปที่ส่วนวิธีการสมัคร แล้วติ๊ก “ทำเครื่องหมายถูกในช่องนี้ หากท่านต้องการระบุวิธีการสมัครเป็นพิเศษ…”'},
+  {scr:'jt-apply',t:'email',type:'email',cap:`ใส่ ${E} ในช่อง Email ถ้ามีอีเมลเดิมอยู่แล้ว ให้คั่นด้วยเครื่องหมาย ,`},
+  {scr:'jt-apply',t:'save',cap:'กดบันทึกประกาศ'},
+  {scr:'jt-list',t:'row',cap:`เช็กในรายการตำแหน่งงาน ชื่อต้องมี (${C}) ต่อท้าย`}];
+ else if(b.kind==='bk') steps=[
+  {scr:'bk-list',t:'edit',cap:'ไปที่เมนู อัปเดต/แก้ไขตำแหน่งงาน แล้วกด แก้ไข ที่ตำแหน่งนั้น'},
+  {scr:'bk-form',t:'title',type:'title',cap:`ใส่ (${C}) ต่อท้ายชื่อตำแหน่งงาน`},
+  {scr:'bk-apply',t:'viajb',cap:'ไปที่ ขั้นตอนที่ 9 : การตั้งค่ารับใบสมัครงาน แล้วติ๊ก รับสมัครงานผ่านทาง Jobbkk.com'},
+  {scr:'bk-apply',t:'add',cap:'กด + เพิ่มอีเมล'},
+  {scr:'bk-apply',t:'email',type:'email',cap:`พิมพ์ ${E} ในช่องใหม่ (ไม่ต้องติ๊ก รับ Email Urgent Matching)`},
+  {scr:'bk-apply',t:'save',cap:'กดบันทึกการแก้ไข'}];
+ else steps=[
+  {scr:'post',t:'title',type:'title',cap:`ในหน้าลงประกาศงาน ใส่ชื่อตำแหน่งให้มี (${C}) ต่อท้าย`},
+  {scr:'post',t:'email',type:'email',cap:`ใส่ ${E} ในช่องอีเมลรับใบสมัคร`},
+  {scr:'post',t:'publish',cap:'กดลงประกาศ ใบสมัครใหม่จะเข้า EZHire อัตโนมัติ'}];
+ return {b,steps};}
+const dur=(m,st)=>st.type==='title'?Math.ceil(title.length/1.5)+22:st.type==='email'?Math.ceil(m.b.email.length/1.5)+22:26;
+let lastScr='', lastPanel='', lastStage='';
+function render(){
+ const m=model(); if(S.step>=m.steps.length) S.step=0;
+ const idx=S.step, cur=m.steps[idx], typed=Math.floor(S.tick*1.5), all=!S.playing, d=dur(m,cur);
+ const late=S.tick>d*0.55||all;
+ const stepOf=t=>m.steps.findIndex(x=>x.t===t);
+ const done=t=>{const i=stepOf(t); return i>=0&&(idx>i||(idx===i&&late))};
+ const val=(f,full)=>{const si=m.steps.findIndex(x=>x.type===f); return idx>si?full:idx===si?(all?full:full.slice(0,typed)):''};
+ const hl=t=>cur.t===t?' hl':'';
+ const caret=f=>cur.type===f&&!all?'<span class="caret"></span>':'';
+ const cb=on=>`<span class="cbx${on?' on':''}">${on?'<i class="ph ph-check" aria-hidden="true"></i>':''}</span>`;
+ const pk=S.board+'|'+idx+'|'+S.playing;
+ if(pk!==lastPanel){ lastPanel=pk;
+ const fe=document.activeElement, fk=fe&&root.contains(fe)?(fe.dataset.go?`[data-go="${fe.dataset.go}"]`:fe.dataset.board?`[data-board="${fe.dataset.board}"]`:''):'';
+ $('[data-slot=chips]').innerHTML=BOARDS.map(x=>`<button type="button" class="chip${CONNECTED.has(x.id)?' connected':''}" data-board="${x.id}" aria-pressed="${x.id===S.board}">${x.name}${CONNECTED.has(x.id)?' · เชื่อมต่อแล้ว':''}</button>`).join('');
+ root.querySelectorAll('[data-slot=bn]').forEach(e=>e.textContent=m.b.name);
+ $('[data-slot=email]').textContent=m.b.email;
+ const st=$('[data-slot=status]'), con=CONNECTED.has(m.b.id); st.className='gstatus'+(con?' connected':''); st.innerHTML=con?`<i class="ph-fill ph-check-circle" aria-hidden="true"></i>ตำแหน่งงานนี้เชื่อมต่อกับ ${esc(m.b.name)} แล้ว`:`ตำแหน่งงานนี้ยังไม่ได้เชื่อมต่อกับ ${esc(m.b.name)}`;
+ $('[data-slot=url]').textContent=m.b.name+' · Employer (ภาพจำลองแบบย่อ)';
+ $('[data-slot=count]').textContent=(idx+1)+' / '+m.steps.length;
+ $('[data-slot=steps]').innerHTML=m.steps.map((x,i)=>`<li><button type="button" class="srow${i===idx?' on':i<idx?' done':''}" data-go="${i}"${i===idx?' aria-current="step"':''}><span class="num">${i<idx?'<i class="ph ph-check" aria-hidden="true"></i>':i+1}</span><span>${esc(x.cap)}</span></button></li>`).join('');
+ $('[data-act=play]').textContent=S.playing?'หยุด':'เล่นอัตโนมัติ';
+ const n=m.b.note; $('[data-slot=note]').innerHTML=`<div class="note" style="${n[0]==='ok'?'background:#eaf5ec;color:#308242':'background:#fdf4f3;color:#a6382a'}">${esc(n[1])}</div>`;
+ if(fk) $(fk)?.focus();
+ }
+ const sk=S.board+'|'+idx+'|'+late+'|'+all;
+ if(sk!==lastStage){ lastStage=sk;
+ const vs=(f,ph='')=>`<span data-v="${f}"${ph?` data-ph="${ph}"`:''}></span>`;
+ const tv=vs('title')+caret('title'), ev=vs('email')+caret('email');
+ const anim=cur.scr!==lastScr; lastScr=cur.scr; const na=anim?'':';animation:none';
+ const field=(label,inner,cls='')=>`<div style="display:flex;flex-direction:column;gap:6px"><div style="font-weight:600">${label}</div><div class="fld${cls}">${inner}</div></div>`;
+ const block=(label,h)=>`<div style="display:flex;flex-direction:column;gap:6px"><div style="font-weight:600">${label}</div><div style="height:${h}px;max-width:560px;border:1px solid #D1D5DB;border-radius:8px;background:#F9FAFB"></div></div>`;
+ let scr='';
+ switch(cur.scr){
+ case 'form': scr=`<div class="scr" style="padding:32px;display:flex;flex-direction:column;gap:18px${na}"><div style="font-size:22px;font-weight:600">Create a job ad</div>${field('Job title',tv,hl('title'))}${field('Location','<span class="ph">Bangkok</span>')}${field('Work type','<span class="ph">Full time</span>')}<span class="dark" style="align-self:flex-start">Continue</span></div>`; break;
+ case 'job': case 'menu': scr=`<div class="scr" style="${na.slice(1)}"><div style="padding:28px 32px 0;display:flex;flex-wrap:wrap;justify-content:space-between;gap:16px">
+  <div style="display:flex;flex-direction:column;gap:8px"><div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap"><span style="font-size:22px;font-weight:600">${esc(title)}</span><span style="font-size:12px;font-weight:600;padding:2px 8px;border-radius:6px;background:#E5E7EB">Live</span></div><div style="color:#4B5563">Hiring in progress</div></div>
+  <div style="display:flex;gap:10px;align-items:center"><span style="padding:10px 14px;font-weight:600">View job</span><span class="${hl('manage')}" style="padding:10px 16px;border-radius:8px;background:#E5E7EB;font-weight:600;white-space:nowrap">Manage job ▾</span></div></div>
+  <div style="margin:20px 32px 0;border-bottom:1px solid #E5E7EB;display:flex;gap:24px;color:#4B5563"><span style="padding:10px 0;border-bottom:2px solid #374151;color:#111827;font-weight:600">Applications</span><span style="padding:10px 0">Notes</span></div>
+  <div style="margin:20px 32px;display:flex;flex-direction:column;gap:12px"><div style="height:72px;border-radius:10px;background:#F3F4F6"></div><div style="height:72px;border-radius:10px;background:#F3F4F6"></div><div style="height:72px;border-radius:10px;background:#F3F4F6"></div></div>
+  ${cur.scr==='menu'?`<div style="position:absolute;top:84px;right:24px;width:min(260px,calc(100% - 48px));background:#fff;border:1px solid #E5E7EB;border-radius:12px;box-shadow:0 12px 32px rgba(17,24,39,.14);padding:8px;display:flex;flex-direction:column">${['View ad information','Edit job','Refresh job','Copy job','Expire job'].map((x,i)=>`<span style="padding:9px 12px;${i===4?'border-bottom:1px solid #E5E7EB':''}">${x}</span>`).join('')}<span class="hl" style="padding:9px 12px;border-radius:8px;background:#F3F4F6">Notifications</span><span style="padding:9px 12px">Team access</span></div>`:''}</div>`; break;
+ case 'modal': { const radioOn=done('radio'); scr=`<div class="scr" style="background:rgba(17,24,39,.45);display:flex;align-items:center;justify-content:center;padding:24px${na}"><div style="width:100%;max-width:620px;background:#fff;border-radius:14px;padding:24px 28px;display:flex;flex-direction:column;gap:14px">
+  <div style="font-size:18px;font-weight:600">Notifications</div>
+  <div style="display:flex;gap:12px"><span class="rd"></span><div><div style="font-size:15px">Daily email</div><div style="font-size:13px;color:#6B7280">A daily summary of the applications you've received</div></div></div>
+  <div style="display:flex;gap:12px"><span class="rd"></span><div><div style="font-size:15px">Weekly email</div><div style="font-size:13px;color:#6B7280">A weekly summary of the applications you've received</div></div></div>
+  <div class="${hl('radio')}" style="display:flex;gap:12px;padding:8px;margin:-8px;border-radius:10px"><span class="rd${radioOn?' on':''}"></span><div style="flex:1;display:flex;flex-direction:column;gap:8px"><div><div style="font-size:15px">Every application email</div><div style="font-size:13px;color:#6B7280">Every application will be emailed to you</div></div>
+   ${radioOn?`<div style="display:flex;flex-direction:column;gap:6px"><div style="font-size:13px;font-weight:600">Every application emails will be sent to the following address:</div><div class="fld${hl('email')}">${ev}</div></div>`:''}</div></div>
+  <div style="display:flex;gap:12px"><span class="rd"></span><div style="font-size:15px">Never for this job</div></div>
+  <div style="display:flex;gap:16px;align-items:center"><span class="dark${hl('save')}">Save</span><span style="font-weight:600">Cancel</span></div></div></div>`; break; }
+ case 'jt-form': scr=`<div class="scr" style="padding:32px;display:flex;flex-direction:column;gap:18px${na}"><div style="font-size:20px;font-weight:600">ลงประกาศ / แก้ไขตำแหน่งงาน</div>${field('ชื่อตำแหน่งงาน',tv,hl('title'))}${block('รายละเอียดงาน',96)}${field('เงินเดือน','<span class="ph">ระบุ</span>')}</div>`; break;
+ case 'jt-apply': { const sp=done('special'); const fr=(l,v,c='')=>`<div class="frow"><div style="font-weight:600;text-align:right">${l}</div><div class="fld${c}">${v}</div></div>`;
+  scr=`<div class="scr" style="padding:24px 28px;display:flex;flex-direction:column;gap:14px${na}"><div class="muted">… เลื่อนลงมาที่ส่วนวิธีการสมัคร</div>
+  <div style="background:#F6F1EC;border-radius:12px;padding:20px 24px;display:flex;flex-direction:column;gap:12px">
+   <div class="cl">${cb(false)}<span>สัมภาษณ์งานออนไลน์ (Online Interview)</span></div>
+   <div class="cl${hl('special')}">${cb(sp)}<div><div>ทำเครื่องหมายถูกในช่องนี้ หากท่านต้องการระบุวิธีการสมัครเป็นพิเศษสำหรับตำแหน่งงานนี้</div><div style="font-size:12px;color:#6B7280">(ท่านไม่จำเป็นต้องกรอกข้อมูลทุกช่อง และหากไม่กรอกช่องใด กรุณาเว้นว่าง)</div></div></div>
+   ${sp?`<div style="display:flex;flex-direction:column;gap:10px;padding-left:28px">${fr('ชื่อผู้ติดต่อ','<span class="ph">ระบุ</span>')}${fr('โทร','<span class="ph">ระบุ</span>')}${fr('Email',vs('email','ระบุ')+caret('email'),hl('email'))}${cur.t==='email'?`<div class="frow"><div></div><div style="font-size:12px;color:#a6382a;overflow-wrap:anywhere">มีอีเมลเดิมอยู่แล้ว? คั่นด้วย , เช่น ${esc(m.b.email)},hr@yourcompany.com</div></div>`:''}${fr('ที่อยู่','<span class="ph">ระบุ</span>')}${fr('Line ID','<span class="ph">ระบุ</span>')}</div>`:''}
+  </div><span class="dark${hl('save')}" style="align-self:flex-start">บันทึก</span></div>`; break; }
+ case 'jt-list': { const rows=[['1977001','Sales Executive (Demo) (EZ1590)'],['1977002',esc(JOB.name)+' <b>('+JOB.code+')</b>'],['1977003','HR Officer (Demo) (EZ1592)']];
+  scr=`<div class="scr" style="padding:28px 32px;display:flex;flex-direction:column;gap:12px${na}"><div style="font-size:20px;font-weight:600">รายการตำแหน่งงาน</div><div style="display:flex;flex-direction:column;gap:8px">${rows.map((r,i)=>`<div class="${i===1?hl('row').trim():''}" style="display:grid;grid-template-columns:28px 40px auto minmax(0,1fr);gap:10px;align-items:center;padding:14px 12px;border-radius:10px;background:${i===1?'#FFFBEB':'#F9FAFB'}"><span>${i+1}.</span><span class="on-pill">ON</span><span class="muted">${r[0]}</span><span>${r[1]}</span></div>`).join('')}</div></div>`; break; }
+ case 'bk-list': scr=`<div class="scr" style="${na.slice(1)}"><div style="display:flex;flex-wrap:wrap;gap:8px 20px;padding:14px 24px;border-bottom:1px solid #E5E7EB;font-size:13px;color:#374151"><span>หน้าสมาชิก</span><span>ประกาศงานด่วน</span><span style="font-weight:700;color:#111827;text-decoration:underline">อัปเดต/แก้ไขตำแหน่งงาน</span><span>Help Center</span></div>
+  <div style="padding:20px 24px;display:flex;flex-direction:column;gap:12px"><div style="font-size:18px;font-weight:600"><span class="muted" style="font-size:18px">หน้าสมาชิก /</span> รายการตำแหน่งงาน</div>
+  <div style="overflow-x:auto"><table><thead><tr><th>ตำแหน่งงาน</th><th>วันที่แก้ไข</th><th>สถานะ</th><th>การจัดการ</th></tr></thead><tbody>
+  ${[['Sales Executive (Demo)',false],[JOB.name,true],['HR Officer (Demo)',false]].map(r=>`<tr style="${r[1]?'background:#FFFBEB':''}"><td>${esc(r[0])}</td><td class="muted">25/11/2026</td><td><span style="font-size:12px;padding:3px 10px;border-radius:999px;background:#eaf5ec;color:#308242;white-space:nowrap">ออนไลน์</span></td><td style="white-space:nowrap"><span class="ghost" style="margin-right:6px">AI Urgent</span><span class="ghost${r[1]?hl('edit'):''}">แก้ไข</span></td></tr>`).join('')}
+  </tbody></table></div></div></div>`; break;
+ case 'bk-form': scr=`<div class="scr" style="padding:32px;display:flex;flex-direction:column;gap:18px${na}"><div style="font-size:20px;font-weight:600">แก้ไขตำแหน่งงาน</div>${field('ชื่อตำแหน่งงาน',tv,hl('title'))}${block('รายละเอียดงาน',96)}<div class="muted">… ขั้นตอนต่อๆ ไป</div></div>`; break;
+ case 'bk-apply': { const via=done('viajb'), added=done('add'); const urow=(i,v,on,c='')=>`<div style="display:grid;grid-template-columns:16px minmax(0,1fr) auto;gap:10px;align-items:center"><span class="muted">${i}</span><div class="fld${c}" style="max-width:none">${v}</div><span style="display:flex;gap:6px;align-items:center;font-size:12px">${cb(on)} Urgent Matching <span class="ghost" style="padding:4px 10px">ลบ</span></span></div>`;
+  scr=`<div class="scr" style="padding:22px 28px;display:flex;flex-direction:column;gap:12px${na}"><div style="font-size:16px;font-weight:600">ขั้นตอนที่ 9 : การตั้งค่ารับใบสมัครงาน</div>
+  <div class="cl">${cb(false)}<span>ใช้ข้อมูลการติดต่อเดียวกับ Company Profile</span></div>
+  <div class="g3">${field('* ชื่อผู้ติดต่อ','<span class="ph">คุณ…</span>')}${field('* เบอร์ผู้ติดต่อ','<span class="ph">0xx-xxx-xxxx</span>')}${field('* อีเมล','<span class="ph">hr@yourcompany.com</span>')}</div>
+  <div style="font-weight:600">* วิธีการสมัคร</div>
+  <div class="cl${hl('viajb')}" style="align-self:flex-start">${cb(via)}<span>รับสมัครงานผ่านทาง Jobbkk.com</span></div>
+  ${via?`<div style="background:#F9FAFB;border-radius:10px;padding:14px 16px;display:flex;flex-direction:column;gap:10px">${urow(1,'<span class="ph">hr@yourcompany.com</span>',true)}${added?urow(2,ev||'',false,hl('email')):''}<span class="ghost${hl('add')}" style="align-self:center;color:#a6382a;border-color:#f2b4af">+ เพิ่มอีเมล</span><div class="muted" style="text-align:center;font-size:12px">เพิ่มได้อีก ${added?3:4} รายการ (สูงสุด 5)</div></div>`:''}
+  <span class="dark${hl('save')}" style="align-self:flex-start">บันทึก</span></div>`; break; }
+ default: scr=`<div class="scr" style="padding:32px;display:flex;flex-direction:column;gap:18px${na}"><div style="font-size:22px;font-weight:600">ลงประกาศงาน</div>${field('ชื่อตำแหน่งงาน',tv,hl('title'))}${block('รายละเอียดงาน',88)}${field('อีเมลรับใบสมัคร',ev,hl('email'))}<span class="dark${hl('publish')}" style="align-self:flex-start">ลงประกาศ</span></div>`;
+ }
+ const fin=['save','publish'].includes(cur.t)&&late;
+ const toast=fin?`<div class="toast" role="status">บันทึกแล้ว · ใบสมัครจะถูกส่งไปที่ ${esc(m.b.email)}</div>`:'';
+ $('[data-slot=stage]').innerHTML=scr+toast+`<div class="cap"><span style="flex:none;width:28px;height:28px;border-radius:999px;background:#c6473c;display:inline-flex;align-items:center;justify-content:center;font-size:13px;font-weight:600">${idx+1}</span><span style="flex:1;line-height:20px">${esc(cur.cap)}</span><span aria-hidden="true" style="flex:none;width:96px;height:4px;border-radius:999px;background:#4b5563;overflow:hidden"><span data-p style="display:block;height:100%;width:0;background:#fff;transition:width 80ms linear"></span></span></div>`;
+ }
+ root.querySelectorAll('[data-v]').forEach(e=>{const f=e.dataset.v, v=val(f,f==='title'?title:m.b.email);
+  if(!v&&e.dataset.ph) e.innerHTML=`<span class="ph">${esc(e.dataset.ph)}</span>`; else if(e.textContent!==v) e.textContent=v;});
+ const p=$('[data-p]'); if(p) p.style.width=Math.min(100,(all?1:S.tick/d)*100)+'%';
+}
+root.addEventListener('click',e=>{const t=e.target.closest('button'); if(!t) return; const m=model();
+ if(t.dataset.board){Object.assign(S,{board:t.dataset.board,step:0,tick:0,playing:true});lastScr=''}
+ else if(t.dataset.go){Object.assign(S,{step:+t.dataset.go,tick:0,playing:false})}
+ else if(t.dataset.act==='prev'){Object.assign(S,{step:(S.step-1+m.steps.length)%m.steps.length,tick:0,playing:false})}
+ else if(t.dataset.act==='next'){Object.assign(S,{step:(S.step+1)%m.steps.length,tick:0,playing:false})}
+ else if(t.dataset.act==='play'){S.playing=!S.playing;S.tick=0}
+ else if(t.dataset.copy){const txt=t.dataset.copy==='title'?title:m.b.email, out=t.querySelector('.copied'); const say=v=>{out.textContent=v; setTimeout(()=>out.textContent='',1500)}; try{navigator.clipboard.writeText(txt).then(()=>say('คัดลอกแล้ว'),()=>say('คัดลอกไม่ได้'))}catch(_){say('คัดลอกไม่ได้')} return}
+ else return; render();});
+const reduce=window.matchMedia&&matchMedia('(prefers-reduced-motion: reduce)').matches;
+if(reduce) S.playing=false;
+setInterval(()=>{ if(!S.playing) return; const m=model(), cur=m.steps[S.step]; if(!cur){S.step=0;S.tick=0} else if(S.tick+1>=dur(m,cur)){S.step=(S.step+1)%m.steps.length;S.tick=0} else S.tick++; render();},80);
+render();
+}
+</script>
+</body>
+</html>
